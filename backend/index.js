@@ -8,7 +8,7 @@ const server = http.createServer(app);
 
 const io = new Server(server, {
   cors: {
-    origin: "*",
+    origin: "https://robiulhasanofficial.github.io/Mge/frontend/",
     methods: ["GET", "POST"]
   }
 });
