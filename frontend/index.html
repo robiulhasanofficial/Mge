@@ -5,6 +5,7 @@
   <meta charset="UTF-8">
   <title>Group Chat</title>
   <link rel="stylesheet" href="style.css">
+  <link rel="icon" href="/logo/fc93fffe-7c40-4fda-b543-c9245b655199.png" type="image/x-icon">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
 </head>
@@ -15,10 +16,16 @@
     <form id="chat-form">
       <input id="message-input" autocomplete="off" placeholder="Type a message..." />
       <input type="file" id="file-input" accept="image/*,video/*" />
+      <!-- Emoji Button -->
+<button type="button" id="emoji-button">😊</button>
+
+<!-- Emoji Picker -->
+<emoji-picker id="emoji-picker" style="display:none; position: absolute; bottom: 70px; right: 10px;"></emoji-picker>
+
       <button type="submit">Send</button>
     </form>
   </div>
-
+  <script type="module" src="https://cdn.jsdelivr.net/npm/emoji-picker-element@^1/index.js"></script>
   <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
   <script src="script.js"></script>
 </body>

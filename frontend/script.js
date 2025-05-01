@@ -6,8 +6,11 @@ const form = document.getElementById('chat-form');
 const messageInput = document.getElementById('message-input');
 const fileInput = document.getElementById('file-input');
 const messages = document.getElementById('messages');
+const emojiBtn = document.getElementById('emoji-button');
+const emojiPicker = document.getElementById('emoji-picker');
 
-const username = prompt("Enter your name:") || "Anonymous"; // ইউজারের নাম চাওয়া
+// ইউজারের নাম চাওয়া
+const username = prompt("Enter your name:") || "Anonymous";
 
 // ফর্ম সাবমিট হলে
 form.addEventListener('submit', (e) => {
@@ -19,7 +22,7 @@ form.addEventListener('submit', (e) => {
   // যদি ফাইল থাকে
   if (file) {
     const reader = new FileReader();
-    
+
     reader.onload = function () {
       const fileData = {
         username,
@@ -56,7 +59,7 @@ form.addEventListener('submit', (e) => {
 socket.on('chat message', (msg) => {
   const li = document.createElement('li');
   li.classList.add('message');
-  
+
   if (msg.username === username) {
     li.classList.add('own');
   } else {
@@ -72,7 +75,7 @@ socket.on('chat message', (msg) => {
 socket.on('chat media', (media) => {
   const li = document.createElement('li');
   li.classList.add('message');
-  
+
   if (media.username === username) {
     li.classList.add('own');
   } else {
@@ -92,4 +95,23 @@ socket.on('chat media', (media) => {
 
   messages.appendChild(li);
   messages.scrollTop = messages.scrollHeight;
+});
+
+// Toggle emoji picker visibility
+emojiBtn.addEventListener('click', (e) => {
+  e.stopPropagation(); // To prevent closing when clicking the emoji button itself
+  emojiPicker.style.display = emojiPicker.style.display === 'none' ? 'block' : 'none';
+});
+
+// Insert emoji into message input
+emojiPicker.addEventListener('emoji-click', (event) => {
+  messageInput.value += event.detail.unicode;
+  emojiPicker.style.display = 'none'; // Hide the emoji picker after selecting an emoji
+});
+
+// Close emoji picker if clicked outside
+document.addEventListener('click', (e) => {
+  if (!emojiBtn.contains(e.target) && !emojiPicker.contains(e.target)) {
+    emojiPicker.style.display = 'none'; // Hide the emoji picker if clicked outside
+  }
 });
