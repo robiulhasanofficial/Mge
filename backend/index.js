@@ -3,7 +3,7 @@ const express = require("express");
 const app = express();
 const http = require("http").createServer(app);
 const { Server } = require("socket.io");
-const cors = require("cors");
+
 app.use(cors({
   origin: "https://robiulhasanofficial.github.io",
   methods: ["GET", "POST"]
@@ -16,7 +16,6 @@ const io = new Server(http, {
   }
 });
 
-app.use(cors());
 app.use(express.json());
 
 const users = {};
@@ -48,6 +47,6 @@ io.on("connection", (socket) => {
 });
 
 const PORT = process.env.PORT || 5000;
-server.listen(PORT, () => {
+http.listen(PORT, () => {
   console.log(`🚀 Server running on http://localhost:${PORT}`);
 });
