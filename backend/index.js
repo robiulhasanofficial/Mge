@@ -7,11 +7,12 @@ const app = express();
 const server = http.createServer(app);
 
 const io = new Server(server, {
-  cors: {
-    origin: "*",
-    methods: ["GET", "POST"]
-  }
-});
+    cors: {
+      origin: "https://robiulhasanofficial.github.io/Mge/frontend/", // ✅ শুধুমাত্র তোমার GitHub Pages frontend URL
+      methods: ["GET", "POST"]
+    }
+  });
+  
 
 app.use(cors());
 app.use(express.json());
