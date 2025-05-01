@@ -1,4 +1,5 @@
-const sockety = io("https://mge-2.onrender.com");
+const socket = io("http://localhost:5000");
+
 const form = document.getElementById('chat-form');
 const messageInput = document.getElementById('message-input');
 const fileInput = document.getElementById('file-input');
