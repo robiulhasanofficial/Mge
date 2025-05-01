@@ -1,14 +1,18 @@
+const cors = require("cors");
 const express = require("express");
-const http = require("http");
+const app = express();
+const http = require("http").createServer(app);
 const { Server } = require("socket.io");
 const cors = require("cors");
 
-const app = express();
-const server = http.createServer(app);
+app.use(cors({
+  origin: "https://robiulhasanofficial.github.io",
+  methods: ["GET", "POST"]
+}));
 
-const io = new Server(server, {
+const io = new Server(http, {
   cors: {
-    origin: "https://robiulhasanofficial.github.io/Mge/frontend/",
+    origin: "https://robiulhasanofficial.github.io",
     methods: ["GET", "POST"]
   }
 });

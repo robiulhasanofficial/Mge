@@ -1,4 +1,6 @@
-const socket = io("https://mge-2.onrender.com");
+const socket = io("https://mge-2.onrender.com", {
+  transports: ["websocket", "polling"]
+});
 
 const form = document.getElementById('chat-form');
 const messageInput = document.getElementById('message-input');
