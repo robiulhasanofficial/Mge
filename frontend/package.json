@@ -1,0 +1,14 @@
+{
+  "name": "chat-frontend",
+  "version": "1.0.0",
+  "license": "MIT",
+  "scripts": {
+    "start": "live-server" 
+  },
+  "dependencies": {
+    "axios": "^0.26.0",
+    "socket.io-client": "^4.7.2",
+    "live-server": "^1.2.1"
+  }
+}
+
