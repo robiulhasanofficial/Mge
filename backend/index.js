@@ -4,7 +4,6 @@ const app = express();
 const http = require("http").createServer(app);
 const { Server } = require("socket.io");
 const cors = require("cors");
-
 app.use(cors({
   origin: "https://robiulhasanofficial.github.io",
   methods: ["GET", "POST"]
