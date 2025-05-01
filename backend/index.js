@@ -8,7 +8,7 @@ const server = http.createServer(app);
 
 const io = new Server(server, {
     cors: {
-      origin: "https://robiulhasanofficial.github.io/Mge/frontend/", // ✅ শুধুমাত্র তোমার GitHub Pages frontend URL
+      origin: "https://robiulhasanofficial.github.io", // ✅ শুধুমাত্র তোমার GitHub Pages frontend URL
       methods: ["GET", "POST"]
     }
   });
