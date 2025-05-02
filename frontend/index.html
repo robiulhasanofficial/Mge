@@ -32,6 +32,23 @@
       <button type="submit">Send</button>
     </form>
   </div>
+  <script>
+    // Disable pull-to-refresh on mobile
+    let touchStartY = 0;
+    window.addEventListener('touchstart', (e) => {
+      if (e.touches.length === 1) {
+        touchStartY = e.touches[0].clientY;
+      }
+    });
+  
+    window.addEventListener('touchmove', (e) => {
+      const touchY = e.touches[0].clientY;
+      if (touchY > touchStartY && window.scrollY === 0) {
+        e.preventDefault();
+      }
+    }, { passive: false });
+  </script>
+  
 
   <script type="module" src="https://cdn.jsdelivr.net/npm/emoji-picker-element@^1/index.js"></script>
   <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
