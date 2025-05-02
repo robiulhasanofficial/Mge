@@ -12,7 +12,7 @@
       height: 100%;
       margin: 0;
       padding: 0;
-      overflow: hidden;
+      overflow: auto; /* Enable scroll if needed */
     }
 
     body {
@@ -22,7 +22,7 @@
 </head>
 <body>
   <div class="chat-container">
-    <ul id="messages"></ul>
+    <ul id="messages"><li style="visibility:hidden;">&nbsp;</li></ul> <!-- keeps scrollbar visible -->
     
     <form id="chat-form">
       <input id="message-input" autocomplete="off" placeholder="Type a message..." />
