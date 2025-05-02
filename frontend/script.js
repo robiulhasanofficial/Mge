@@ -9,9 +9,8 @@ const messages = document.getElementById('messages');
 const emojiBtn = document.getElementById('emoji-button');
 const emojiPicker = document.getElementById('emoji-picker');
 
-const SECRET_CODE = "CCCDS999"; // 🔐 আপনার নির্দিষ্ট কোড
+const SECRET_CODE = "CCCDS999";
 
-// ✅ লোকাল স্টোরেজে ইউজার রেজিস্টার করা আছে কিনা চেক করুন
 let username = localStorage.getItem("username");
 let code = localStorage.getItem("code");
 
@@ -32,19 +31,16 @@ if (!username || code !== SECRET_CODE) {
   socket.emit("register", username);
 }
 
-// ✅ পুরনো মেসেজ রিসিভ করা (message history)
 socket.on("message history", (messagesArray) => {
-  messagesArray.forEach((msg) => {
-    displayMessage(msg);
-  });
+  messagesArray.forEach((msg) => displayMessage(msg));
+  forceScrollToBottom();
 });
 
-// ✅ টেক্সট মেসেজ রিসিভ করা
 socket.on('chat message', (msg) => {
   displayMessage(msg);
+  forceScrollToBottom();
 });
 
-// ✅ ইমেজ / ভিডিও রিসিভ করা
 socket.on('chat media', (media) => {
   const li = document.createElement('li');
   li.classList.add('message', media.username === username ? 'own' : 'other');
@@ -58,10 +54,9 @@ socket.on('chat media', (media) => {
   content += `<br><small>${media.timestamp}</small>`;
   li.innerHTML = content;
   messages.appendChild(li);
-  messages.scrollTop = messages.scrollHeight;
+  forceScrollToBottom();
 });
 
-// ✅ ফর্ম সাবমিট হলে মেসেজ / মিডিয়া পাঠানো
 form.addEventListener('submit', (e) => {
   e.preventDefault();
   const text = messageInput.value.trim();
@@ -97,24 +92,29 @@ form.addEventListener('submit', (e) => {
   }
 });
 
-// ✅ মেসেজ দেখানোর কমন ফাংশন
 function displayMessage(msg) {
   const li = document.createElement('li');
   li.classList.add('message', msg.username === username ? 'own' : 'other');
   li.innerHTML = `<strong>${msg.username}</strong>: ${msg.text}<br><small>${msg.timestamp}</small>`;
   messages.appendChild(li);
-  messages.scrollTop = messages.scrollHeight;
 }
 
-// ✅ ইমোজি পিকার হ্যান্ডলিং
+function forceScrollToBottom() {
+  setTimeout(() => {
+    messages.scrollTop = messages.scrollHeight;
+  }, 100);
+}
+
 emojiBtn.addEventListener('click', (e) => {
   e.stopPropagation();
   emojiPicker.style.display = emojiPicker.style.display === 'none' ? 'block' : 'none';
 });
+
 emojiPicker.addEventListener('emoji-click', (event) => {
   messageInput.value += event.detail.unicode;
   emojiPicker.style.display = 'none';
 });
+
 document.addEventListener('click', (e) => {
   if (!emojiBtn.contains(e.target) && !emojiPicker.contains(e.target)) {
     emojiPicker.style.display = 'none';
