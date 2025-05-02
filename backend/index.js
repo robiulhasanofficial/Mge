@@ -1,10 +1,10 @@
 const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
-const app = express();
-const http = require("http").createServer(app); // ✅ fixed here
+const http = require("http").createServer();
 const { Server } = require("socket.io");
 
+const app = express();
 const io = new Server(http, {
   cors: {
     origin: "https://robiulhasanofficial.github.io",
@@ -42,9 +42,11 @@ const Message = mongoose.model("Message", messageSchema);
 io.on("connection", async (socket) => {
   console.log("🟢 User connected:", socket.id);
 
+  // আগের মেসেজ পাঠানো
   const oldMessages = await Message.find().sort({ timestamp: 1 }).limit(100);
   socket.emit("message history", oldMessages);
 
+  // ✅ রেজিস্ট্রেশন
   socket.on("register", ({ username, code }) => {
     if (code !== SECRET_CODE) {
       socket.emit("register_failed", "❌ Invalid code");
@@ -57,6 +59,7 @@ io.on("connection", async (socket) => {
     io.emit("active users", Object.keys(users).length);
   });
 
+  // ✅ টেক্সট মেসেজ
   socket.on("chat message", async (msg) => {
     console.log("💬 Message:", msg);
 
@@ -70,6 +73,7 @@ io.on("connection", async (socket) => {
     io.emit("chat message", newMsg);
   });
 
+  // ✅ মিডিয়া মেসেজ
   socket.on("chat media", async (media) => {
     console.log("📷 Media received:", media);
 
@@ -83,6 +87,7 @@ io.on("connection", async (socket) => {
     io.emit("chat media", newMedia);
   });
 
+  // ✅ ডিসকানেক্ট
   socket.on("disconnect", () => {
     console.log("🔴 User disconnected:", socket.id);
     delete users[socket.id];
