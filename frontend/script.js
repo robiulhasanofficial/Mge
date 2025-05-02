@@ -9,12 +9,8 @@ const messages = document.getElementById('messages');
 const emojiBtn = document.getElementById('emoji-button');
 const emojiPicker = document.getElementById('emoji-picker');
 
-// ইউজারের নাম ও পাসওয়ার্ড চাওয়া
+// ইউজারের নাম চাওয়া
 const username = prompt("Enter your name:") || "Anonymous";
-const password = prompt("Enter your password:") || ""; // পাসওয়ার্ডও নিতে হবে
-
-// সার্ভারে নাম এবং পাসওয়ার্ড পাঠানো
-socket.emit("register", { username, password });
 
 // ফর্ম সাবমিট হলে
 form.addEventListener('submit', (e) => {
