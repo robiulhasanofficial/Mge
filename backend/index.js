@@ -4,6 +4,7 @@ const app = express();
 const http = require("http").createServer(app);
 const { Server } = require("socket.io");
 
+// Allow frontend access
 app.use(cors({
   origin: "https://robiulhasanofficial.github.io",
   methods: ["GET", "POST"]
@@ -19,9 +20,13 @@ const io = new Server(http, {
 app.use(express.json());
 
 const users = {};
+const messages = []; // ✅ সব মেসেজ জমা রাখার জন্য অ্যারে
 
 io.on("connection", (socket) => {
   console.log("🟢 User connected:", socket.id);
+
+  // ✅ নতুন ইউজারকে আগের মেসেজ পাঠান
+  socket.emit("message history", messages);
 
   socket.on("register", (username) => {
     users[socket.id] = username;
@@ -31,7 +36,9 @@ io.on("connection", (socket) => {
 
   socket.on("chat message", (msg) => {
     console.log("💬 Message:", msg);
-    io.emit("chat message", msg);
+
+    messages.push(msg);             // ✅ মেসেজ অ্যারেতে সংরক্ষণ
+    io.emit("chat message", msg);   // ✅ সব ইউজারকে পাঠানো
   });
 
   socket.on("chat media", (media) => {

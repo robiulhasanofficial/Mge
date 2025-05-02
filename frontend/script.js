@@ -55,6 +55,24 @@ form.addEventListener('submit', (e) => {
   }
 });
 
+// ✅ পুরনো মেসেজ রিসিভ করা (message history)
+socket.on("message history", (messagesArray) => {
+  messagesArray.forEach((msg) => {
+    const li = document.createElement('li');
+    li.classList.add('message');
+
+    if (msg.username === username) {
+      li.classList.add('own');
+    } else {
+      li.classList.add('other');
+    }
+
+    li.innerHTML = `<strong>${msg.username}</strong>: ${msg.text}<br><small>${msg.timestamp}</small>`;
+    messages.appendChild(li);
+    messages.scrollTop = messages.scrollHeight;
+  });
+});
+
 // টেক্সট মেসেজ রিসিভ করা
 socket.on('chat message', (msg) => {
   const li = document.createElement('li');
