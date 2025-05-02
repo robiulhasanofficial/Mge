@@ -9,97 +9,45 @@ const messages = document.getElementById('messages');
 const emojiBtn = document.getElementById('emoji-button');
 const emojiPicker = document.getElementById('emoji-picker');
 
-// ইউজারের নাম চাওয়া
-const username = prompt("Enter your name:") || "Anonymous";
+const SECRET_CODE = "CCCDS999"; // 🔐 আপনার নির্দিষ্ট কোড
 
-// ফর্ম সাবমিট হলে
-form.addEventListener('submit', (e) => {
-  e.preventDefault(); // ফর্মের ডিফল্ট সাবমিট এ্যাকশন বন্ধ করা
+// ✅ লোকাল স্টোরেজে ইউজার রেজিস্টার করা আছে কিনা চেক করুন
+let username = localStorage.getItem("username");
+let code = localStorage.getItem("code");
 
-  const text = messageInput.value.trim(); // মেসেজের টেক্সট
-  const file = fileInput.files[0]; // ফাইল (ইমেজ/ভিডিও)
+if (!username || code !== SECRET_CODE) {
+  username = prompt("Enter your name:") || "Anonymous";
+  code = prompt("Enter secret code:") || "";
 
-  // যদি ফাইল থাকে
-  if (file) {
-    const reader = new FileReader();
-
-    reader.onload = function () {
-      const fileData = {
-        username,
-        timestamp: new Date().toLocaleTimeString(),
-        type: file.type.startsWith("image") ? "image" : file.type.startsWith("video") ? "video" : "unknown", // ফাইল টাইপ চেক করা
-        data: reader.result
-      };
-
-      // মিডিয়া ফাইল (ইমেজ / ভিডিও) পাঠানো
-      if (fileData.type === "image" || fileData.type === "video") {
-        socket.emit("chat media", fileData);
-      } else {
-        alert("Only image and video files are supported.");
-      }
-    };
-
-    reader.readAsDataURL(file); // ফাইলের ডাটা পড়া
-    fileInput.value = ''; // ফাইল ইনপুট রিসেট করা
+  if (code === SECRET_CODE) {
+    localStorage.setItem("username", username);
+    localStorage.setItem("code", code);
+    socket.emit("register", username);
+  } else {
+    alert("Invalid code. Access denied.");
+    document.body.innerHTML = "<h2 style='text-align:center;'>Unauthorized access</h2>";
+    throw new Error("Unauthorized");
   }
-
-  // যদি মেসেজ থাকে
-  if (text) {
-    const msg = {
-      username,
-      text,
-      timestamp: new Date().toLocaleTimeString(),
-    };
-    socket.emit('chat message', msg); // মেসেজ সার্ভারে পাঠানো
-    messageInput.value = ''; // ইনপুট ফিল্ড রিসেট করা
-  }
-});
+} else {
+  socket.emit("register", username);
+}
 
 // ✅ পুরনো মেসেজ রিসিভ করা (message history)
 socket.on("message history", (messagesArray) => {
   messagesArray.forEach((msg) => {
-    const li = document.createElement('li');
-    li.classList.add('message');
-
-    if (msg.username === username) {
-      li.classList.add('own');
-    } else {
-      li.classList.add('other');
-    }
-
-    li.innerHTML = `<strong>${msg.username}</strong>: ${msg.text}<br><small>${msg.timestamp}</small>`;
-    messages.appendChild(li);
-    messages.scrollTop = messages.scrollHeight;
+    displayMessage(msg);
   });
 });
 
-// টেক্সট মেসেজ রিসিভ করা
+// ✅ টেক্সট মেসেজ রিসিভ করা
 socket.on('chat message', (msg) => {
-  const li = document.createElement('li');
-  li.classList.add('message');
-
-  if (msg.username === username) {
-    li.classList.add('own');
-  } else {
-    li.classList.add('other');
-  }
-
-  li.innerHTML = `<strong>${msg.username}</strong>: ${msg.text}<br><small>${msg.timestamp}</small>`;
-  messages.appendChild(li);
-  messages.scrollTop = messages.scrollHeight;
+  displayMessage(msg);
 });
 
-// ইমেজ / ভিডিও রিসিভ করা
+// ✅ ইমেজ / ভিডিও রিসিভ করা
 socket.on('chat media', (media) => {
   const li = document.createElement('li');
-  li.classList.add('message');
-
-  if (media.username === username) {
-    li.classList.add('own');
-  } else {
-    li.classList.add('other');
-  }
-
+  li.classList.add('message', media.username === username ? 'own' : 'other');
   let content = `<strong>${media.username}</strong><br>`;
 
   if (media.type === "image") {
@@ -107,29 +55,68 @@ socket.on('chat media', (media) => {
   } else if (media.type === "video") {
     content += `<video src="${media.data}" controls style="max-width: 250px; border-radius: 8px;"></video>`;
   }
-
   content += `<br><small>${media.timestamp}</small>`;
   li.innerHTML = content;
-
   messages.appendChild(li);
   messages.scrollTop = messages.scrollHeight;
 });
 
-// Toggle emoji picker visibility
+// ✅ ফর্ম সাবমিট হলে মেসেজ / মিডিয়া পাঠানো
+form.addEventListener('submit', (e) => {
+  e.preventDefault();
+  const text = messageInput.value.trim();
+  const file = fileInput.files[0];
+
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = function () {
+      const fileData = {
+        username,
+        timestamp: new Date().toLocaleTimeString(),
+        type: file.type.startsWith("image") ? "image" : file.type.startsWith("video") ? "video" : "unknown",
+        data: reader.result
+      };
+      if (fileData.type === "image" || fileData.type === "video") {
+        socket.emit("chat media", fileData);
+      } else {
+        alert("Only image and video files are supported.");
+      }
+    };
+    reader.readAsDataURL(file);
+    fileInput.value = '';
+  }
+
+  if (text) {
+    const msg = {
+      username,
+      text,
+      timestamp: new Date().toLocaleTimeString(),
+    };
+    socket.emit('chat message', msg);
+    messageInput.value = '';
+  }
+});
+
+// ✅ মেসেজ দেখানোর কমন ফাংশন
+function displayMessage(msg) {
+  const li = document.createElement('li');
+  li.classList.add('message', msg.username === username ? 'own' : 'other');
+  li.innerHTML = `<strong>${msg.username}</strong>: ${msg.text}<br><small>${msg.timestamp}</small>`;
+  messages.appendChild(li);
+  messages.scrollTop = messages.scrollHeight;
+}
+
+// ✅ ইমোজি পিকার হ্যান্ডলিং
 emojiBtn.addEventListener('click', (e) => {
-  e.stopPropagation(); // To prevent closing when clicking the emoji button itself
+  e.stopPropagation();
   emojiPicker.style.display = emojiPicker.style.display === 'none' ? 'block' : 'none';
 });
-
-// Insert emoji into message input
 emojiPicker.addEventListener('emoji-click', (event) => {
   messageInput.value += event.detail.unicode;
-  emojiPicker.style.display = 'none'; // Hide the emoji picker after selecting an emoji
+  emojiPicker.style.display = 'none';
 });
-
-// Close emoji picker if clicked outside
 document.addEventListener('click', (e) => {
   if (!emojiBtn.contains(e.target) && !emojiPicker.contains(e.target)) {
-    emojiPicker.style.display = 'none'; // Hide the emoji picker if clicked outside
+    emojiPicker.style.display = 'none';
   }
 });
