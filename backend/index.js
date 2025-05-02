@@ -26,6 +26,7 @@ mongoose.connect("mongodb+srv://hasanjehad668:jehadhasan999@cluster0.vbdrzey.mon
   console.log("✅ Connected to MongoDB");
 }).catch((err) => {
   console.error("❌ MongoDB connection error:", err);
+  process.exit(1);  // Terminate the process if MongoDB connection fails
 });
 
 // মেসেজ স্কিমা
@@ -93,6 +94,11 @@ io.on("connection", async (socket) => {
     delete users[socket.id];
     io.emit("user list", Object.values(users));
     io.emit("active users", Object.keys(users).length);
+  });
+
+  // Error handling on socket
+  socket.on('error', (err) => {
+    console.error('Socket error:', err);
   });
 });
 
