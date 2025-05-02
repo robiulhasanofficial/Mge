@@ -14,6 +14,11 @@ const SECRET_CODE = "CCCDS999";
 let username = localStorage.getItem("username");
 let code = localStorage.getItem("code");
 
+// Notification Permission
+if ("Notification" in window && Notification.permission !== "granted") {
+  Notification.requestPermission();
+}
+
 // User Authentication
 if (!username || code !== SECRET_CODE) {
   username = prompt("Enter your name:") || "Anonymous";
@@ -42,6 +47,14 @@ socket.on("message history", (messagesArray) => {
 socket.on("chat message", (msg) => {
   displayMessage(msg);
   forceScrollToBottom();
+
+  // Notification
+  if (msg.username !== username && Notification.permission === "granted") {
+    new Notification(`${msg.username}`, {
+      body: msg.text,
+      icon: "/logo/logo.png"
+    });
+  }
 });
 
 // New media message
@@ -60,6 +73,13 @@ socket.on("chat media", (media) => {
 
   messages.appendChild(li);
   forceScrollToBottom();
+
+  // Notification for media
+  if (media.username !== username && Notification.permission === "granted") {
+    new Notification(`${media.username} sent a ${media.type}`, {
+      icon: "/logo/logo.png"
+    });
+  }
 });
 
 // Send message or file
@@ -135,23 +155,3 @@ document.addEventListener("click", (e) => {
     emojiPicker.style.display = "none";
   }
 });
-
-// Infinite Scroll Implementation
-let isLoading = false;
-
-messages.addEventListener('scroll', () => {
-  if (!isLoading && messages.scrollTop === 0) {
-    isLoading = true; // Prevent multiple fetches
-    loadOlderMessages(); // Call a function to load older messages
-  }
-});
-
-function loadOlderMessages() {
-  // Simulate fetching older messages
-  setTimeout(() => {
-    const newMessage = document.createElement("li");
-    newMessage.textContent = "Older message " + new Date().toLocaleTimeString();
-    messages.insertBefore(newMessage, messages.firstChild);
-    isLoading = false; // Allow further scroll triggers
-  }, 1000);
-}
