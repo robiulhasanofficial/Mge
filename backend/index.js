@@ -1,13 +1,9 @@
-const cors = require("cors");
 const express = require("express");
+const cors = require("cors");
+const mongoose = require("mongoose");
 const app = express();
-const http = require("http").createServer(app);
+const http = require("http").createServer(app); // ✅ fixed here
 const { Server } = require("socket.io");
-
-app.use(cors({
-  origin: "https://robiulhasanofficial.github.io",
-  methods: ["GET", "POST"]
-}));
 
 const io = new Server(http, {
   cors: {
@@ -16,55 +12,81 @@ const io = new Server(http, {
   }
 });
 
+app.use(cors());
 app.use(express.json());
 
-const SECRET_CODE = "CCCDS999"; // ✅ গোপন কোড
+const SECRET_CODE = "CCCDS999";
 const users = {};
-const messages = [];
 
-io.on("connection", (socket) => {
+// MongoDB সংযোগ
+mongoose.connect("mongodb+srv://hasanjehad668:jehadhasan999@cluster0.vbdrzey.mongodb.net/chatDB?retryWrites=true&w=majority", {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+}).then(() => {
+  console.log("✅ Connected to MongoDB");
+}).catch((err) => {
+  console.error("❌ MongoDB connection error:", err);
+});
+
+// মেসেজ স্কিমা
+const messageSchema = new mongoose.Schema({
+  sender: String,
+  content: String,
+  type: { type: String, default: "text" },
+  timestamp: { type: Date, default: Date.now }
+});
+
+const Message = mongoose.model("Message", messageSchema);
+
+// Socket.io হ্যান্ডলিং
+io.on("connection", async (socket) => {
   console.log("🟢 User connected:", socket.id);
 
-  // আগের মেসেজ পাঠানো
-  socket.emit("message history", messages);
+  const oldMessages = await Message.find().sort({ timestamp: 1 }).limit(100);
+  socket.emit("message history", oldMessages);
 
-  // ✅ রেজিস্ট্রেশনের সময় ইউজারের নাম ও কোড চেক করা হবে
   socket.on("register", ({ username, code }) => {
     if (code !== SECRET_CODE) {
       socket.emit("register_failed", "❌ Invalid code");
-      console.log(`🚫 ${username} failed to join (wrong code)`);
       return;
     }
 
     users[socket.id] = username;
-    console.log(`👤 ${username} joined.`);
     socket.emit("register_success", "✅ Registered successfully");
     io.emit("user list", Object.values(users));
-
-    // সক্রিয় ইউজার কাউন্ট পাঠানো
     io.emit("active users", Object.keys(users).length);
   });
 
-  // টেক্সট মেসেজ হ্যান্ডলিং
-  socket.on("chat message", (msg) => {
+  socket.on("chat message", async (msg) => {
     console.log("💬 Message:", msg);
-    messages.push(msg);
-    io.emit("chat message", msg);
+
+    const newMsg = new Message({
+      sender: msg.sender,
+      content: msg.content,
+      type: "text"
+    });
+    await newMsg.save();
+
+    io.emit("chat message", newMsg);
   });
 
-  // ✅ মিডিয়া মেসেজ হ্যান্ডলিং (নতুন যোগ)
-  socket.on("chat media", (media) => {
+  socket.on("chat media", async (media) => {
     console.log("📷 Media received:", media);
-    io.emit("chat media", media);
+
+    const newMedia = new Message({
+      sender: media.sender,
+      content: media.content,
+      type: "media"
+    });
+    await newMedia.save();
+
+    io.emit("chat media", newMedia);
   });
 
-  // ডিসকানেক্ট হ্যান্ডলিং
   socket.on("disconnect", () => {
     console.log("🔴 User disconnected:", socket.id);
     delete users[socket.id];
     io.emit("user list", Object.values(users));
-
-    // সক্রিয় ইউজার কাউন্ট আপডেট
     io.emit("active users", Object.keys(users).length);
   });
 });
