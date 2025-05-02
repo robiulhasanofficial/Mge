@@ -4,7 +4,6 @@ const app = express();
 const http = require("http").createServer(app);
 const { Server } = require("socket.io");
 
-// Allow frontend access
 app.use(cors({
   origin: "https://robiulhasanofficial.github.io",
   methods: ["GET", "POST"]
@@ -20,25 +19,26 @@ const io = new Server(http, {
 app.use(express.json());
 
 const users = {};
-const messages = []; // ✅ সব মেসেজ জমা রাখার জন্য অ্যারে
+const fixedPassword = "your_secret_password"; // নির্দিষ্ট পাসওয়ার্ড
 
 io.on("connection", (socket) => {
   console.log("🟢 User connected:", socket.id);
 
-  // ✅ নতুন ইউজারকে আগের মেসেজ পাঠান
-  socket.emit("message history", messages);
-
-  socket.on("register", (username) => {
-    users[socket.id] = username;
-    console.log(`👤 ${username} joined.`);
-    io.emit("user list", Object.values(users));
+  // ইউজার রেজিস্টার করা
+  socket.on("register", ({ username, password }) => {
+    if (password === fixedPassword) {
+      users[socket.id] = username;
+      console.log(`👤 ${username} joined.`);
+      io.emit("user list", Object.values(users));
+    } else {
+      socket.emit("error", "Invalid password"); // পাসওয়ার্ড ভুল হলে মেসেজ পাঠানো
+      socket.disconnect(); // সংযোগ বন্ধ করা
+    }
   });
 
   socket.on("chat message", (msg) => {
     console.log("💬 Message:", msg);
-
-    messages.push(msg);             // ✅ মেসেজ অ্যারেতে সংরক্ষণ
-    io.emit("chat message", msg);   // ✅ সব ইউজারকে পাঠানো
+    io.emit("chat message", msg);
   });
 
   socket.on("chat media", (media) => {
