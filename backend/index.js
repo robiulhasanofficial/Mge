@@ -40,6 +40,9 @@ io.on("connection", (socket) => {
     console.log(`👤 ${username} joined.`);
     socket.emit("register_success", "✅ Registered successfully");
     io.emit("user list", Object.values(users));
+
+    // Send the active user count to all clients
+    io.emit("active users", Object.keys(users).length);
   });
 
   socket.on("chat message", (msg) => {
@@ -52,6 +55,9 @@ io.on("connection", (socket) => {
     console.log("🔴 User disconnected:", socket.id);
     delete users[socket.id];
     io.emit("user list", Object.values(users));
+
+    // Send the active user count after a disconnect
+    io.emit("active users", Object.keys(users).length);
   });
 });
 

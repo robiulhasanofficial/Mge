@@ -8,6 +8,7 @@ const fileInput = document.getElementById('file-input');
 const messages = document.getElementById('messages');
 const emojiBtn = document.getElementById('emoji-button');
 const emojiPicker = document.getElementById('emoji-picker');
+const activeUsersElement = document.getElementById('active-users'); // Active users element
 
 const SECRET_CODE = "CCCDS999";
 
@@ -80,6 +81,11 @@ socket.on("chat media", (media) => {
       icon: "/logo/logo.png"
     });
   }
+});
+
+// Active users count update
+socket.on("active users", (count) => {
+  activeUsersElement.textContent = `Active Users: ${count}`;
 });
 
 // Send message or file
