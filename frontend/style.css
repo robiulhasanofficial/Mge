@@ -48,14 +48,19 @@ body {
   list-style: none;
   padding: 20px;
   flex: 1;
-  overflow-y: scroll; /* Always show scrollbar */
+  overflow-y: scroll; /* এটা scroll থেকে auto করলাম */
   display: flex;
   flex-direction: column;
   gap: 15px;
   background: linear-gradient(to bottom, #f7f9fb, #e0f7fa);
   scroll-behavior: smooth;
   min-height: 0;
+
+  /* নতুন যোগ করা টাচ স্ক্রল সাপোর্ট */
+  -webkit-overflow-scrolling: touch; /* iOS smooth scroll */
+  touch-action: pan-y; /* vertical scroll gesture support */
 }
+
 
 #messages::-webkit-scrollbar {
   width: 8px;
@@ -164,6 +169,10 @@ button:hover {
     padding: 10px;
     gap: 8px;
     overflow-y: scroll;
+    
+  /* নতুন যোগ করা টাচ স্ক্রল সাপোর্ট */
+  -webkit-overflow-scrolling: touch; /* iOS smooth scroll */
+  touch-action: pan-y; /* vertical scroll gesture support */
   }
 
   #messages li {

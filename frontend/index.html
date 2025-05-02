@@ -1,57 +1,58 @@
 <!-- frontend/index.html -->
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <title>JHR Group Chat</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <link rel="stylesheet" href="style.css" />
-  <link rel="icon" href="/logo/logo.png" type="image/x-icon" />
-  <style>
-    html, body {
-      height: 100%;
-      margin: 0;
-      padding: 0;
-      overflow: auto; /* Enable scroll if needed */
-    }
-
-    body {
-      overscroll-behavior: contain;
-    }
-  </style>
-</head>
-<body>
-  <div class="chat-container">
-    <ul id="messages"><li style="visibility:hidden;">&nbsp;</li></ul> <!-- keeps scrollbar visible -->
-    
-    <form id="chat-form">
-      <input id="message-input" autocomplete="off" placeholder="Type a message..." />
-      <input type="file" id="file-input" accept="image/*,video/*" />
-      <button type="button" id="emoji-button">😊</button>
-      <emoji-picker id="emoji-picker" style="display:none; position: absolute; bottom: 70px; right: 10px;"></emoji-picker>
-      <button type="submit">Send</button>
-    </form>
-  </div>
-  <script>
-    // Disable pull-to-refresh on mobile
-    let touchStartY = 0;
-    window.addEventListener('touchstart', (e) => {
-      if (e.touches.length === 1) {
-        touchStartY = e.touches[0].clientY;
+  <head>
+    <meta charset="UTF-8" />
+    <title>JHR Group Chat</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <link rel="stylesheet" href="style.css" />
+    <link rel="icon" href="/logo/logo.png" type="image/x-icon" />
+    <style>
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        overflow: auto;
+        overscroll-behavior: contain;
+        touch-action: none; /* Prevent iOS pull-to-refresh */
       }
-    });
-  
-    window.addEventListener('touchmove', (e) => {
-      const touchY = e.touches[0].clientY;
-      if (touchY > touchStartY && window.scrollY === 0) {
-        e.preventDefault();
-      }
-    }, { passive: false });
-  </script>
-  
+    </style>
+  </head>
+  <body>
+    <div class="chat-container">
+      <ul id="messages">
+        <li style="visibility: hidden">&nbsp;</li> <!-- Keeps scrollbar visible even when no message -->
+      </ul>
 
-  <script type="module" src="https://cdn.jsdelivr.net/npm/emoji-picker-element@^1/index.js"></script>
-  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
-  <script src="script.js"></script>
-</body>
+      <form id="chat-form">
+        <input id="message-input" autocomplete="off" placeholder="Type a message..." />
+        <input type="file" id="file-input" accept="image/*,video/*" />
+        <button type="button" id="emoji-button">😊</button>
+        <emoji-picker id="emoji-picker" style="display: none; position: absolute; bottom: 70px; right: 10px;"></emoji-picker>
+        <button type="submit">Send</button>
+      </form>
+    </div>
+
+    <!-- Prevent pull-to-refresh on mobile -->
+    <script>
+      let touchStartY = 0;
+      window.addEventListener("touchstart", (e) => {
+        if (e.touches.length === 1) {
+          touchStartY = e.touches[0].clientY;
+        }
+      });
+
+      window.addEventListener("touchmove", (e) => {
+        const touchY = e.touches[0].clientY;
+        if (touchY > touchStartY && window.scrollY === 0) {
+          e.preventDefault();
+        }
+      }, { passive: false });
+    </script>
+
+    <!-- External Scripts -->
+    <script type="module" src="https://cdn.jsdelivr.net/npm/emoji-picker-element@^1/index.js"></script>
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+    <script src="script.js"></script>
+  </body>
 </html>

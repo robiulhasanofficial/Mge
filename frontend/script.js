@@ -14,6 +14,7 @@ const SECRET_CODE = "CCCDS999";
 let username = localStorage.getItem("username");
 let code = localStorage.getItem("code");
 
+// User Authentication
 if (!username || code !== SECRET_CODE) {
   username = prompt("Enter your name:") || "Anonymous";
   code = prompt("Enter secret code:") || "";
@@ -24,28 +25,31 @@ if (!username || code !== SECRET_CODE) {
     socket.emit("register", username);
   } else {
     alert("Invalid code. Access denied.");
-    document.body.innerHTML = "<h2 style='text-align:center;'>Unauthorized access</h2>";
+    document.body.innerHTML = "<h2 style='text-align:center; color:red;'>Unauthorized Access</h2>";
     throw new Error("Unauthorized");
   }
 } else {
   socket.emit("register", username);
 }
 
+// Load message history
 socket.on("message history", (messagesArray) => {
-  messagesArray.forEach((msg) => displayMessage(msg));
+  messagesArray.forEach(displayMessage);
   forceScrollToBottom();
 });
 
-socket.on('chat message', (msg) => {
+// New text message
+socket.on("chat message", (msg) => {
   displayMessage(msg);
   forceScrollToBottom();
 });
 
-socket.on('chat media', (media) => {
-  const li = document.createElement('li');
-  li.classList.add('message', media.username === username ? 'own' : 'other');
-  let content = `<strong>${media.username}</strong><br>`;
+// New media message
+socket.on("chat media", (media) => {
+  const li = document.createElement("li");
+  li.classList.add("message", media.username === username ? "own" : "other");
 
+  let content = `<strong>${media.username}</strong><br>`;
   if (media.type === "image") {
     content += `<img src="${media.data}" style="max-width: 200px; border-radius: 8px;" />`;
   } else if (media.type === "video") {
@@ -53,70 +57,81 @@ socket.on('chat media', (media) => {
   }
   content += `<br><small>${media.timestamp}</small>`;
   li.innerHTML = content;
+
   messages.appendChild(li);
   forceScrollToBottom();
 });
 
-form.addEventListener('submit', (e) => {
+// Send message or file
+form.addEventListener("submit", (e) => {
   e.preventDefault();
+
   const text = messageInput.value.trim();
   const file = fileInput.files[0];
 
   if (file) {
     const reader = new FileReader();
-    reader.onload = function () {
-      const fileData = {
+    reader.onload = () => {
+      const type = file.type.startsWith("image")
+        ? "image"
+        : file.type.startsWith("video")
+        ? "video"
+        : "unknown";
+
+      if (type === "unknown") {
+        alert("Only image and video files are supported.");
+        return;
+      }
+
+      socket.emit("chat media", {
         username,
         timestamp: new Date().toLocaleTimeString(),
-        type: file.type.startsWith("image") ? "image" : file.type.startsWith("video") ? "video" : "unknown",
+        type,
         data: reader.result
-      };
-      if (fileData.type === "image" || fileData.type === "video") {
-        socket.emit("chat media", fileData);
-      } else {
-        alert("Only image and video files are supported.");
-      }
+      });
     };
     reader.readAsDataURL(file);
-    fileInput.value = '';
+    fileInput.value = "";
   }
 
   if (text) {
-    const msg = {
+    socket.emit("chat message", {
       username,
       text,
-      timestamp: new Date().toLocaleTimeString(),
-    };
-    socket.emit('chat message', msg);
-    messageInput.value = '';
+      timestamp: new Date().toLocaleTimeString()
+    });
+    messageInput.value = "";
   }
 });
 
+// Display a message
 function displayMessage(msg) {
-  const li = document.createElement('li');
-  li.classList.add('message', msg.username === username ? 'own' : 'other');
+  const li = document.createElement("li");
+  li.classList.add("message", msg.username === username ? "own" : "other");
   li.innerHTML = `<strong>${msg.username}</strong>: ${msg.text}<br><small>${msg.timestamp}</small>`;
   messages.appendChild(li);
 }
 
+// Scroll to bottom
 function forceScrollToBottom() {
   setTimeout(() => {
     messages.scrollTop = messages.scrollHeight;
   }, 100);
 }
 
-emojiBtn.addEventListener('click', (e) => {
+// Emoji picker handling
+emojiBtn.addEventListener("click", (e) => {
   e.stopPropagation();
-  emojiPicker.style.display = emojiPicker.style.display === 'none' ? 'block' : 'none';
+  emojiPicker.style.display = emojiPicker.style.display === "none" ? "block" : "none";
 });
 
-emojiPicker.addEventListener('emoji-click', (event) => {
+emojiPicker.addEventListener("emoji-click", (event) => {
   messageInput.value += event.detail.unicode;
-  emojiPicker.style.display = 'none';
+  emojiPicker.style.display = "none";
 });
 
-document.addEventListener('click', (e) => {
+document.addEventListener("click", (e) => {
   if (!emojiBtn.contains(e.target) && !emojiPicker.contains(e.target)) {
-    emojiPicker.style.display = 'none';
+    emojiPicker.style.display = "none";
   }
 });
