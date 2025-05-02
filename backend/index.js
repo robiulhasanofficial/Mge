@@ -41,22 +41,30 @@ io.on("connection", (socket) => {
     socket.emit("register_success", "✅ Registered successfully");
     io.emit("user list", Object.values(users));
 
-    // Send the active user count to all clients
+    // সক্রিয় ইউজার কাউন্ট পাঠানো
     io.emit("active users", Object.keys(users).length);
   });
 
+  // টেক্সট মেসেজ হ্যান্ডলিং
   socket.on("chat message", (msg) => {
     console.log("💬 Message:", msg);
     messages.push(msg);
     io.emit("chat message", msg);
   });
 
+  // ✅ মিডিয়া মেসেজ হ্যান্ডলিং (নতুন যোগ)
+  socket.on("chat media", (media) => {
+    console.log("📷 Media received:", media);
+    io.emit("chat media", media);
+  });
+
+  // ডিসকানেক্ট হ্যান্ডলিং
   socket.on("disconnect", () => {
     console.log("🔴 User disconnected:", socket.id);
     delete users[socket.id];
     io.emit("user list", Object.values(users));
 
-    // Send the active user count after a disconnect
+    // সক্রিয় ইউজার কাউন্ট আপডেট
     io.emit("active users", Object.keys(users).length);
   });
 });
