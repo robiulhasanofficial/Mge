@@ -135,3 +135,23 @@ document.addEventListener("click", (e) => {
     emojiPicker.style.display = "none";
   }
 });
+
+// Infinite Scroll Implementation
+let isLoading = false;
+
+messages.addEventListener('scroll', () => {
+  if (!isLoading && messages.scrollTop === 0) {
+    isLoading = true; // Prevent multiple fetches
+    loadOlderMessages(); // Call a function to load older messages
+  }
+});
+
+function loadOlderMessages() {
+  // Simulate fetching older messages
+  setTimeout(() => {
+    const newMessage = document.createElement("li");
+    newMessage.textContent = "Older message " + new Date().toLocaleTimeString();
+    messages.insertBefore(newMessage, messages.firstChild);
+    isLoading = false; // Allow further scroll triggers
+  }, 1000);
+}
