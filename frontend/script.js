@@ -51,6 +51,7 @@ socket.on("chat message", (msg) => {
   if (msg.sender !== username && Notification.permission === "granted") {
     new Notification(`${msg.sender}`, {
       body: msg.content,
+      
     });
   }
 });
@@ -62,8 +63,7 @@ socket.on("chat media", (media) => {
 
   let content = `<strong>${media.sender}</strong><br>`;
   if (media.type === "image") {
-    // ক্যাশিং সমস্যা এড়ানোর জন্য timestamp যোগ করা হয়েছে
-    content += `<img src="${media.content}?timestamp=${new Date().getTime()}" style="max-width: 200px; border-radius: 8px;" />`;
+    content += `<img src="${media.content}" style="max-width: 200px; border-radius: 8px;" />`;
   } else if (media.type === "video") {
     content += `<video src="${media.content}" controls style="max-width: 250px; border-radius: 8px;"></video>`;
   }
