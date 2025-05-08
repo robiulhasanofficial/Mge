@@ -1,42 +1,3 @@
-require("dotenv").config();
-const express = require("express");
-const cors = require("cors");
-const mongoose = require("mongoose");
-const http = require("http");
-const { Server } = require("socket.io");
-
-const app = express();
-const server = http.createServer(app);
-
-const io = new Server(server, {
-  cors: {
-    origin: "https://robiulhasanofficial.github.io",
-    methods: ["GET", "POST"]
-  }
-});
-
-app.use(cors());
-app.use(express.json());
-
-const SECRET_CODE = process.env.SECRET_CODE;
-const users = {};
-
-// ✅ হেলথচেক রুট
-app.get("/", (req, res) => {
-  res.send("✅ Server is running");
-});
-
-// ✅ MongoDB সংযোগ
-mongoose.connect(process.env.MONGO_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true
-}).then(() => {
-  console.log("✅ Connected to MongoDB");
-}).catch((err) => {
-  console.error("❌ MongoDB connection error:", err);
-  process.exit(1);
-});
-
 // ✅ মেসেজ স্কিমা ও মডেল
 const messageSchema = new mongoose.Schema({
   sender: String,
@@ -68,9 +29,10 @@ io.on("connection", async (socket) => {
   socket.on("chat message", async (msg) => {
     console.log("💬 Message:", msg);
     const newMsg = new Message({
-      sender: msg.sender,
-      content: msg.content,
-      type: "text"
+      sender: msg.username,          // ✅ ঠিক করা
+      content: msg.text,             // ✅ ঠিক করা
+      type: "text",
+      timestamp: new Date()          // timestamp সহ দিলে ভালো হয়
     });
     await newMsg.save();
     io.emit("chat message", newMsg);
@@ -79,9 +41,10 @@ io.on("connection", async (socket) => {
   socket.on("chat media", async (media) => {
     console.log("📷 Media received:", media);
     const newMedia = new Message({
-      sender: media.sender,
-      content: media.content,
-      type: "media"
+      sender: media.username,        // ✅ ঠিক করা
+      content: media.data,           // ✅ ঠিক করা
+      type: media.type,
+      timestamp: new Date()
     });
     await newMedia.save();
     io.emit("chat media", newMedia);
@@ -97,10 +60,4 @@ io.on("connection", async (socket) => {
   socket.on('error', (err) => {
     console.error('Socket error:', err);
   });
-});
-
-// ✅ সার্ভার চালু
-const PORT = process.env.PORT || 5000;
-server.listen(PORT, () => {
-  console.log(`🚀 Server running on http://localhost:${PORT}`);
 });
