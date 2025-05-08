@@ -48,7 +48,7 @@ body {
   list-style: none;
   padding: 20px;
   flex: 1;
-  overflow-y: scroll; /* এটা scroll থেকে auto করলাম */
+  overflow-y: scroll;
   display: flex;
   flex-direction: column;
   gap: 15px;
@@ -60,7 +60,6 @@ body {
   -webkit-overflow-scrolling: touch; /* iOS smooth scroll */
   touch-action: pan-y; /* vertical scroll gesture support */
 }
-
 
 #messages::-webkit-scrollbar {
   width: 8px;
@@ -146,6 +145,7 @@ button:hover {
   transform: scale(1.05);
   box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
 }
+
 /* Active Users Display */
 #active-users {
   font-size: 18px;
@@ -157,7 +157,6 @@ button:hover {
   text-align: center;
   margin: 10px 0;
 }
-
 
 /* Responsive Adjustments */
 @media (max-width: 375px) {
@@ -181,10 +180,10 @@ button:hover {
     padding: 10px;
     gap: 8px;
     overflow-y: scroll;
-    
-  /* নতুন যোগ করা টাচ স্ক্রল সাপোর্ট */
-  -webkit-overflow-scrolling: touch; /* iOS smooth scroll */
-  touch-action: pan-y; /* vertical scroll gesture support */
+
+    /* নতুন যোগ করা টাচ স্ক্রল সাপোর্ট */
+    -webkit-overflow-scrolling: touch; /* iOS smooth scroll */
+    touch-action: pan-y; /* vertical scroll gesture support */
   }
 
   #messages li {
@@ -213,16 +212,16 @@ button:hover {
     padding: 12px;
     width: 100%;
   }
-  /* Active Users Display */
-#active-users {
-  font-size: 18px;
-  font-weight: bold;
-  color: #fff;
-  background: #ff6a88;
-  padding: 10px;
-  border-radius: 12px;
-  text-align: center;
-  margin: 10px 0;
-}
 
+  /* Active Users Display */
+  #active-users {
+    font-size: 18px;
+    font-weight: bold;
+    color: #fff;
+    background: #ff6a88;
+    padding: 10px;
+    border-radius: 12px;
+    text-align: center;
+    margin: 10px 0;
+  }
 }
