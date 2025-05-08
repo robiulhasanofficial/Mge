@@ -68,8 +68,8 @@ io.on("connection", async (socket) => {
   socket.on("chat message", async (msg) => {
     console.log("💬 Message:", msg);
     const newMsg = new Message({
-      sender: msg.username,          // ✅ ঠিক করা
-      content: msg.text,             // ✅ ঠিক করা
+      sender: msg.sender,     // ✅ পরিবর্তন
+      content: msg.content,   // ✅ পরিবর্তন
       type: "text",
       timestamp: new Date()          // timestamp সহ দিলে ভালো হয়
     });
