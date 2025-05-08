@@ -51,7 +51,7 @@ socket.on("chat message", (msg) => {
   if (msg.sender !== username && Notification.permission === "granted") {
     new Notification(`${msg.sender}`, {
       body: msg.content,
-      icon: "/logo/logo.png"
+      
     });
   }
 });
