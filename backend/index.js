@@ -1,4 +1,6 @@
 require("dotenv").config();
+console.log("🔍 ENV variables:", process.env);
+require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
@@ -6,7 +8,7 @@ const http = require("http");
 const { Server } = require("socket.io");
 
 const app = express();
-const server = http.createServer(app); // ✅ Express অ্যাপ যুক্ত করা হলো
+const server = http.createServer(app);
 
 const io = new Server(server, {
   cors: {
@@ -18,11 +20,16 @@ const io = new Server(server, {
 app.use(cors());
 app.use(express.json());
 
-const SECRET_CODE = "CCCDS999";
+const SECRET_CODE = process.env.SECRET_CODE;
 const users = {};
 
+// ✅ হেলথচেক রুট
+app.get("/", (req, res) => {
+  res.send("✅ Server is running");
+});
+
 // ✅ MongoDB সংযোগ
-mongoose.connect("mongodb+srv://jehad:sfgsgfstregxf1524@#4@cluster0.7ehhhbn.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0", {
+mongoose.connect(process.env.MONGO_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true
 }).then(() => {
