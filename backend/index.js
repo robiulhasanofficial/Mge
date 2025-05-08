@@ -80,8 +80,8 @@ io.on("connection", async (socket) => {
   socket.on("chat media", async (media) => {
     console.log("📷 Media received:", media);
     const newMedia = new Message({
-      sender: media.username,        // ✅ ঠিক করা
-      content: media.data,           // ✅ ঠিক করা
+      sender: media.sender,        // ← ঠিক করা হয়েছে
+      content: media.content,      // ← ঠিক করা হয়েছে
       type: media.type,
       timestamp: new Date()
     });
