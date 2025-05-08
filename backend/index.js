@@ -83,8 +83,8 @@ io.on("connection", async (socket) => {
   // চ্যাট মিডিয়া (ইমেজ/ভিডিও) হ্যান্ডলিং
   socket.on("chat media", async (media) => {
     const newMedia = new Message({
-      sender: media.username,
-      content: media.data,
+      sender: media.sender,       // ✅ ঠিক করা
+    content: media.content,     // ✅ ঠিক করা
       type: media.type,
       timestamp: new Date()
     });
