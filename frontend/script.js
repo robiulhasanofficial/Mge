@@ -14,12 +14,12 @@ const SECRET_CODE = "CCCDS999";
 let username = localStorage.getItem("username");
 let code = localStorage.getItem("code");
 
-// নোটিফিকেশন অনুমতি চাওয়া
+// Request notification permission
 if ("Notification" in window && Notification.permission !== "granted") {
   Notification.requestPermission();
 }
 
-// ইউজার রেজিস্ট্রেশন
+// Register user
 if (!username || code !== SECRET_CODE) {
   username = prompt("Enter your name:") || "Anonymous";
   code = prompt("Enter secret code:") || "";
@@ -37,13 +37,13 @@ if (!username || code !== SECRET_CODE) {
   socket.emit("register", { username, code });
 }
 
-// মেসেজ হিস্ট্রি লোড
+// Message history
 socket.on("message history", (messagesArray) => {
   messagesArray.forEach(displayMessage);
   forceScrollToBottom();
 });
 
-// নতুন টেক্সট মেসেজ রিসিভ
+// New text message received
 socket.on("chat message", (msg) => {
   displayMessage(msg);
   forceScrollToBottom();
@@ -51,12 +51,12 @@ socket.on("chat message", (msg) => {
   if (msg.sender !== username && Notification.permission === "granted") {
     new Notification(`${msg.sender}`, {
       body: msg.content,
-      
+      icon: "/logo/logo.png"
     });
   }
 });
 
-// নতুন মিডিয়া রিসিভ (ইমেজ/ভিডিও)
+// New media received
 socket.on("chat media", (media) => {
   const li = document.createElement("li");
   li.classList.add("message", media.sender === username ? "own" : "other");
@@ -80,12 +80,12 @@ socket.on("chat media", (media) => {
   }
 });
 
-// অ্যাক্টিভ ইউজার সংখ্যা
+// Active users count
 socket.on("active users", (count) => {
   activeUsersElement.textContent = `Active Users: ${count}`;
 });
 
-// মেসেজ বা মিডিয়া পাঠানো
+// Send message or media
 form.addEventListener("submit", (e) => {
   e.preventDefault();
 
@@ -127,7 +127,7 @@ form.addEventListener("submit", (e) => {
   }
 });
 
-// মেসেজ ডিসপ্লে করা
+// Display message
 function displayMessage(msg) {
   const li = document.createElement("li");
   li.classList.add("message", msg.sender === username ? "own" : "other");
@@ -135,14 +135,14 @@ function displayMessage(msg) {
   messages.appendChild(li);
 }
 
-// অটো স্ক্রল
+// Auto scroll
 function forceScrollToBottom() {
   setTimeout(() => {
     messages.scrollTop = messages.scrollHeight;
   }, 100);
 }
 
-// ইমোজি পিকার
+// Emoji picker
 emojiBtn.addEventListener("click", (e) => {
   e.stopPropagation();
   emojiPicker.style.display = emojiPicker.style.display === "none" ? "block" : "none";
