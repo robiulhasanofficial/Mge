@@ -66,20 +66,22 @@ io.on("connection", async (socket) => {
   });
 
   socket.on("chat message", async (msg) => {
+    console.log("💬 Message:", msg);
     const newMsg = new Message({
-      sender: msg.username,
-      content: msg.text,
+      sender: msg.username,          // ✅ ঠিক করা
+      content: msg.text,             // ✅ ঠিক করা
       type: "text",
-      timestamp: new Date()
+      timestamp: new Date()          // timestamp সহ দিলে ভালো হয়
     });
     await newMsg.save();
     io.emit("chat message", newMsg);
   });
 
   socket.on("chat media", async (media) => {
+    console.log("📷 Media received:", media);
     const newMedia = new Message({
-      sender: media.username,
-      content: media.data,
+      sender: media.username,        // ✅ ঠিক করা
+      content: media.data,           // ✅ ঠিক করা
       type: media.type,
       timestamp: new Date()
     });
@@ -102,5 +104,5 @@ io.on("connection", async (socket) => {
 // ✅ সার্ভার চালু
 const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
+  console.log(`🚀 Server running on http://localhost:${PORT}`);
 });
