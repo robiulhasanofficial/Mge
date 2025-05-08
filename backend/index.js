@@ -68,9 +68,10 @@ io.on("connection", async (socket) => {
   socket.on("chat message", async (msg) => {
     console.log("💬 Message:", msg);
     const newMsg = new Message({
-      sender: msg.sender,
-      content: msg.content,
-      type: "text"
+      sender: msg.username,          // ✅ ঠিক করা
+      content: msg.text,             // ✅ ঠিক করা
+      type: "text",
+      timestamp: new Date()          // timestamp সহ দিলে ভালো হয়
     });
     await newMsg.save();
     io.emit("chat message", newMsg);
@@ -79,9 +80,10 @@ io.on("connection", async (socket) => {
   socket.on("chat media", async (media) => {
     console.log("📷 Media received:", media);
     const newMedia = new Message({
-      sender: media.sender,
-      content: media.content,
-      type: "media"
+      sender: media.username,        // ✅ ঠিক করা
+      content: media.data,           // ✅ ঠিক করা
+      type: media.type,
+      timestamp: new Date()
     });
     await newMedia.save();
     io.emit("chat media", newMedia);
