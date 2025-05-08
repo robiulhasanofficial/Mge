@@ -18,10 +18,10 @@ const io = new Server(server, {
 app.use(cors());
 app.use(express.json());
 
-const SECRET_CODE = process.env.SECRET_CODE;
+const SECRET_CODE = process.env.SECRET_CODE || "CCCDS999";
 const users = {};
 
-// ✅ হেলথচেক রুট
+// ✅ হেলথ চেক
 app.get("/", (req, res) => {
   res.send("✅ Server is running");
 });
@@ -37,7 +37,7 @@ mongoose.connect(process.env.MONGO_URI, {
   process.exit(1);
 });
 
-// ✅ মেসেজ স্কিমা ও মডেল
+// ✅ মেসেজ স্কিমা
 const messageSchema = new mongoose.Schema({
   sender: String,
   content: String,
@@ -50,9 +50,11 @@ const Message = mongoose.model("Message", messageSchema);
 io.on("connection", async (socket) => {
   console.log("🟢 User connected:", socket.id);
 
+  // পুরানো মেসেজ পাঠাও
   const oldMessages = await Message.find().sort({ timestamp: 1 }).limit(100);
   socket.emit("message history", oldMessages);
 
+  // ইউজার রেজিস্ট্রেশন
   socket.on("register", ({ username, code }) => {
     if (code !== SECRET_CODE) {
       socket.emit("register_failed", "❌ Invalid code");
@@ -65,23 +67,25 @@ io.on("connection", async (socket) => {
     io.emit("active users", Object.keys(users).length);
   });
 
+  // টেক্সট মেসেজ
   socket.on("chat message", async (msg) => {
     console.log("💬 Message:", msg);
     const newMsg = new Message({
-      sender: msg.sender,     // ✅ পরিবর্তন
-      content: msg.content,   // ✅ পরিবর্তন
+      sender: msg.sender,
+      content: msg.content,
       type: "text",
-      timestamp: new Date()          // timestamp সহ দিলে ভালো হয়
+      timestamp: new Date()
     });
     await newMsg.save();
     io.emit("chat message", newMsg);
   });
 
+  // মিডিয়া মেসেজ
   socket.on("chat media", async (media) => {
     console.log("📷 Media received:", media);
     const newMedia = new Message({
-      sender: media.sender,        // ← ঠিক করা হয়েছে
-      content: media.content,      // ← ঠিক করা হয়েছে
+      sender: media.sender,
+      content: media.content,
       type: media.type,
       timestamp: new Date()
     });
@@ -89,6 +93,7 @@ io.on("connection", async (socket) => {
     io.emit("chat media", newMedia);
   });
 
+  // ডিসকানেক্ট
   socket.on("disconnect", () => {
     console.log("🔴 User disconnected:", socket.id);
     delete users[socket.id];
