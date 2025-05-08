@@ -70,8 +70,9 @@ io.on("connection", async (socket) => {
   // চ্যাট মেসেজ হ্যান্ডলিং
   socket.on("chat message", async (msg) => {
     const newMsg = new Message({
-      sender: msg.username,
-      content: msg.text,
+      sender: msg.sender,     // ✅ পরিবর্তন
+    content: msg.content,   // ✅ পরিবর্তন
+
       type: "text",
       timestamp: new Date()
     });
