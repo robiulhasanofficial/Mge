@@ -14,12 +14,12 @@ const SECRET_CODE = "CCCDS999";
 let username = localStorage.getItem("username");
 let code = localStorage.getItem("code");
 
-// Request notification permission
+// নোটিফিকেশন অনুমতি চাওয়া
 if ("Notification" in window && Notification.permission !== "granted") {
   Notification.requestPermission();
 }
 
-// Register user
+// ইউজার রেজিস্ট্রেশন
 if (!username || code !== SECRET_CODE) {
   username = prompt("Enter your name:") || "Anonymous";
   code = prompt("Enter secret code:") || "";
@@ -37,13 +37,13 @@ if (!username || code !== SECRET_CODE) {
   socket.emit("register", { username, code });
 }
 
-// Message history
+// মেসেজ হিস্ট্রি লোড
 socket.on("message history", (messagesArray) => {
   messagesArray.forEach(displayMessage);
   forceScrollToBottom();
 });
 
-// New text message received
+// নতুন টেক্সট মেসেজ রিসিভ
 socket.on("chat message", (msg) => {
   displayMessage(msg);
   forceScrollToBottom();
@@ -56,7 +56,7 @@ socket.on("chat message", (msg) => {
   }
 });
 
-// New media received
+// নতুন মিডিয়া রিসিভ (ইমেজ/ভিডিও)
 socket.on("chat media", (media) => {
   const li = document.createElement("li");
   li.classList.add("message", media.sender === username ? "own" : "other");
@@ -80,12 +80,12 @@ socket.on("chat media", (media) => {
   }
 });
 
-// Active users count
+// অ্যাক্টিভ ইউজার সংখ্যা
 socket.on("active users", (count) => {
   activeUsersElement.textContent = `Active Users: ${count}`;
 });
 
-// Send message or media
+// মেসেজ বা মিডিয়া পাঠানো
 form.addEventListener("submit", (e) => {
   e.preventDefault();
 
@@ -127,7 +127,7 @@ form.addEventListener("submit", (e) => {
   }
 });
 
-// Display message
+// মেসেজ ডিসপ্লে করা
 function displayMessage(msg) {
   const li = document.createElement("li");
   li.classList.add("message", msg.sender === username ? "own" : "other");
@@ -135,14 +135,14 @@ function displayMessage(msg) {
   messages.appendChild(li);
 }
 
-// Auto scroll
+// অটো স্ক্রল
 function forceScrollToBottom() {
   setTimeout(() => {
     messages.scrollTop = messages.scrollHeight;
   }, 100);
 }
 
-// Emoji picker
+// ইমোজি পিকার
 emojiBtn.addEventListener("click", (e) => {
   e.stopPropagation();
   emojiPicker.style.display = emojiPicker.style.display === "none" ? "block" : "none";

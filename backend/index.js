@@ -10,7 +10,7 @@ const server = http.createServer(app);
 
 const io = new Server(server, {
   cors: {
-    origin: "https://robiulhasanofficial.github.io",
+    origin: "https://robiulhasanofficial.github.io", // আপনার আসল ফ্রন্টএন্ড URL ব্যবহার করুন
     methods: ["GET", "POST"]
   }
 });
@@ -21,7 +21,7 @@ app.use(express.json());
 const SECRET_CODE = process.env.SECRET_CODE;
 const users = {};
 
-// ✅ হেলথচেক রুট
+// ✅ হেলথ চেক রুট
 app.get("/", (req, res) => {
   res.send("✅ Server is running");
 });
@@ -50,9 +50,11 @@ const Message = mongoose.model("Message", messageSchema);
 io.on("connection", async (socket) => {
   console.log("🟢 User connected:", socket.id);
 
+  // MongoDB থেকে পুরনো মেসেজগুলো লোড করা
   const oldMessages = await Message.find().sort({ timestamp: 1 }).limit(100);
   socket.emit("message history", oldMessages);
 
+  // ইউজার রেজিস্ট্রেশন
   socket.on("register", ({ username, code }) => {
     if (code !== SECRET_CODE) {
       socket.emit("register_failed", "❌ Invalid code");
@@ -65,6 +67,7 @@ io.on("connection", async (socket) => {
     io.emit("active users", Object.keys(users).length);
   });
 
+  // চ্যাট মেসেজ হ্যান্ডলিং
   socket.on("chat message", async (msg) => {
     const newMsg = new Message({
       sender: msg.username,
@@ -76,6 +79,7 @@ io.on("connection", async (socket) => {
     io.emit("chat message", newMsg);
   });
 
+  // চ্যাট মিডিয়া (ইমেজ/ভিডিও) হ্যান্ডলিং
   socket.on("chat media", async (media) => {
     const newMedia = new Message({
       sender: media.username,
@@ -87,6 +91,7 @@ io.on("connection", async (socket) => {
     io.emit("chat media", newMedia);
   });
 
+  // ডিসকানেক্ট হ্যান্ডলিং
   socket.on("disconnect", () => {
     console.log("🔴 User disconnected:", socket.id);
     delete users[socket.id];
