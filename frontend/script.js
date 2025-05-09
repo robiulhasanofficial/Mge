@@ -142,6 +142,27 @@ function displayMessage(msg) {
   messages.appendChild(li);
   forceScrollToBottom();
 }
+messages.addEventListener("click", async (e) => {
+  if (e.target.classList.contains("delete-btn")) {
+    const id = e.target.dataset.id;
+
+    if (confirm("Are you sure you want to delete this message?")) {
+      try {
+        const res = await fetch(`https://mge-2.onrender.com/delete-message/${id}`, {
+          method: "DELETE"
+        });
+        if (res.ok) {
+          document.querySelector(`li[data-id="${id}"]`).remove();
+        } else {
+          alert("❌ Failed to delete");
+        }
+      } catch (err) {
+        console.error(err);
+        alert("❌ Network error");
+      }
+    }
+  }
+});
 
 
 // Auto scroll
