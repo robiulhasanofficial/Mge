@@ -158,3 +158,13 @@ document.addEventListener("click", (e) => {
     emojiPicker.style.display = "none";
   }
 });
+
+// New listener for registration success/failure
+socket.on("register_success", (msg) => {
+  console.log("✅", msg);
+});
+
+socket.on("register_failed", (msg) => {
+  console.error("❌", msg);
+  alert("Registration failed: " + msg);
+});
