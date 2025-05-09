@@ -135,9 +135,18 @@ function displayMessage(msg) {
   if (msg.sender === username) {
     deleteButton = `<button class="delete-btn" data-id="${msg._id}">🗑️</button>`;
   }
+  const bdTime = new Date(msg.timestamp).toLocaleString("en-US", {
+  timeZone: "Asia/Dhaka",
+  hour12: true,
+  hour: "2-digit",
+  minute: "2-digit",
+  day: "2-digit",
+  month: "short",
+  year: "numeric"
+});
 
   li.innerHTML = `<strong>${msg.sender}</strong>: ${msg.content}
-    ${deleteButton}<br><small>${msg.timestamp}</small>`;
+    ${deleteButton}<br><small>${bdTime}</small>`;
 
   messages.appendChild(li);
   forceScrollToBottom();
