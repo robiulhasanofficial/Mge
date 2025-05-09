@@ -129,7 +129,14 @@ form.addEventListener("submit", (e) => {
 function displayMessage(msg) {
   const li = document.createElement("li");
   li.classList.add("message", msg.sender === username ? "own" : "other");
-  li.innerHTML = `<strong>${msg.sender}</strong>: ${msg.content}<br><small>${msg.timestamp}</small>`;
+
+  // Rainbow color span wrapped content
+  const coloredContent = msg.content
+    .split("")
+    .map((char, i) => `<span class="rainbow-char" style="--i:${i}">${char}</span>`)
+    .join("");
+
+  li.innerHTML = `<strong>${msg.sender}</strong>: ${coloredContent}<br><small>${msg.timestamp}</small>`;
   messages.appendChild(li);
 }
 
