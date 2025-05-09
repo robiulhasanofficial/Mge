@@ -126,12 +126,14 @@ form.addEventListener("submit", (e) => {
 });
 
 // Display message
+// Display message
 function displayMessage(msg) {
   const li = document.createElement("li");
   li.classList.add("message", msg.sender === username ? "own" : "other");
   li.innerHTML = `<strong>${msg.sender}</strong>: ${msg.content}<br><small>${msg.timestamp}</small>`;
-
+  messages.appendChild(li); // ✅ মেসেজ DOM এ যুক্ত করো
 }
+
 
 
 // Auto scroll
