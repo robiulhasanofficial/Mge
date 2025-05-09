@@ -125,16 +125,22 @@ form.addEventListener("submit", (e) => {
   }
 });
 
-// Display message
-// Display message
-// Display message
+
 function displayMessage(msg) {
   const li = document.createElement("li");
   li.classList.add("message", msg.sender === username ? "own" : "other");
+  li.dataset.id = msg._id; // মেসেজ আইডি রাখো
 
-  li.innerHTML = `<strong>${msg.sender}</strong>: ${msg.content}<br><small>${msg.timestamp}</small>`;
-  messages.appendChild(li);  // Ensure to append the message to the DOM
-  forceScrollToBottom(); // Scroll down after a message is added
+  let deleteButton = "";
+  if (msg.sender === username) {
+    deleteButton = `<button class="delete-btn" data-id="${msg._id}">🗑️</button>`;
+  }
+
+  li.innerHTML = `<strong>${msg.sender}</strong>: ${msg.content}
+    ${deleteButton}<br><small>${msg.timestamp}</small>`;
+
+  messages.appendChild(li);
+  forceScrollToBottom();
 }
 
 
@@ -144,6 +150,7 @@ function forceScrollToBottom() {
     messages.scrollTop = messages.scrollHeight;
   }, 100);
 }
+
 
 // Emoji picker
 emojiBtn.addEventListener("click", (e) => {

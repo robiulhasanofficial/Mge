@@ -110,6 +110,18 @@ io.on("connection", async (socket) => {
     console.error('Socket error:', err);
   });
 });
+// ✅ ডিলিট মেসেজ
+app.delete("/delete-message/:id", async (req, res) => {
+  try {
+    const id = req.params.id;
+    await Message.findByIdAndDelete(id);
+    io.emit("message deleted", id); // ক্লায়েন্টকে জানিয়ে দাও
+    res.status(200).json({ message: "Message deleted" });
+  } catch (err) {
+    res.status(500).json({ error: "Failed to delete message" });
+  }
+});
+
 
 
 // ✅ সার্ভার চালু
