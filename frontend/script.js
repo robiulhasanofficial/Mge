@@ -125,33 +125,14 @@ form.addEventListener("submit", (e) => {
   }
 });
 
+// Display message
 function displayMessage(msg) {
   const li = document.createElement("li");
   li.classList.add("message", msg.sender === username ? "own" : "other");
+  li.innerHTML = `<strong>${msg.sender}</strong>: ${msg.content}<br><small>${msg.timestamp}</small>`;
 
-  let contentHTML = "";
-
-  if (msg.content) {
-    // Text message
-    const coloredContent = msg.content
-      .split("")
-      .map((char, i) => `<span class="rainbow-char" style="--i:${i}">${char}</span>`)
-      .join("");
-    contentHTML = `${coloredContent}`;
-  } else if (msg.type && msg.content) {
-    // Media message
-    if (msg.type === "image") {
-      contentHTML = `<img src="${msg.content}" style="max-width: 200px; border-radius: 8px;" />`;
-    } else if (msg.type === "video") {
-      contentHTML = `<video src="${msg.content}" controls style="max-width: 250px; border-radius: 8px;"></video>`;
-    }
-  } else {
-    contentHTML = `<i>Unsupported message format</i>`;
-  }
-
-  li.innerHTML = `<strong>${msg.sender}</strong>: ${contentHTML}<br><small>${msg.timestamp}</small>`;
-  messages.appendChild(li);
 }
+
 
 // Auto scroll
 function forceScrollToBottom() {
