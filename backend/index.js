@@ -49,6 +49,7 @@ const Message = mongoose.model("Message", messageSchema);
 // ✅ Socket.io হ্যান্ডলিং
 io.on("connection", async (socket) => {
   console.log("🟢 User connected:", socket.id);
+  console.log("Active users:", Object.keys(users).length)
 
   // পুরানো মেসেজ পাঠাও
   const oldMessages = await Message.find().sort({ timestamp: 1 }).limit(100);
@@ -111,4 +112,3 @@ const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => {
   console.log(`🚀 Server running on http://localhost:${PORT}`);
 });
-console.log(users);
