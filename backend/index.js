@@ -49,7 +49,6 @@ const Message = mongoose.model("Message", messageSchema);
 // ✅ Socket.io হ্যান্ডলিং
 io.on("connection", async (socket) => {
   console.log("🟢 User connected:", socket.id);
-  console.log("Active users:", Object.keys(users).length)
 
   // পুরানো মেসেজ পাঠাও
   const oldMessages = await Message.find().sort({ timestamp: 1 }).limit(100);
@@ -65,7 +64,10 @@ io.on("connection", async (socket) => {
     users[socket.id] = username;
     socket.emit("register_success", "✅ Registered successfully");
     io.emit("user list", Object.values(users));
-    io.emit("active users", Object.keys(users).length);
+    
+    // Update active users count
+    io.emit("active users", Object.keys(users).length);  // Fix here
+
   });
 
   // টেক্সট মেসেজ
@@ -99,13 +101,16 @@ io.on("connection", async (socket) => {
     console.log("🔴 User disconnected:", socket.id);
     delete users[socket.id];
     io.emit("user list", Object.values(users));
-    io.emit("active users", Object.keys(users).length);
+
+    // Update active users count after disconnect
+    io.emit("active users", Object.keys(users).length);  // Fix here
   });
 
   socket.on('error', (err) => {
     console.error('Socket error:', err);
   });
 });
+
 
 // ✅ সার্ভার চালু
 const PORT = process.env.PORT || 5000;
