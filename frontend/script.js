@@ -1,6 +1,10 @@
 const socket = io("https://mge-2.onrender.com", {
   transports: ["websocket", "polling"]
 });
+// Active users count
+socket.on("active users", (count) => {
+  activeUsersElement.textContent = `Active Users: ${count}`;
+});
 
 const form = document.getElementById('chat-form');
 const messageInput = document.getElementById('message-input');
@@ -79,12 +83,6 @@ socket.on("chat media", (media) => {
     });
   }
 });
-
-// Active users count
-socket.on("active users", (count) => {
-  activeUsersElement.textContent = `Active Users: ${count}`;
-});
-
 // Send message or media
 form.addEventListener("submit", (e) => {
   e.preventDefault();
