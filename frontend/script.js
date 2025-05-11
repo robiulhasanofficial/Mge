@@ -108,7 +108,7 @@ form.addEventListener("submit", (e) => {
         sender: username,
         type,
         content: reader.result,
-        timestamp: new Date().toLocaleTimeString()
+        timestamp: new Date()  // ✅ ঠিক এইভাবে টাইমস্ট্যাম্প পাঠাও
       });
     };
     reader.readAsDataURL(file);
