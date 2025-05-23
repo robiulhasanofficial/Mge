@@ -21,6 +21,19 @@
     </style>
   </head>
   <body>
+    <!-- Advanced Animated Preloader -->
+<div id="preloader">
+  <div class="loader-box">
+    <img src="logop.jpg" alt="Logo" class="loader-logo" />
+    <div id="progress-text">Loading... 0%</div>
+    <div class="progress-bar">
+      <div class="progress-fill"></div>
+      <div class="glow"></div>
+    </div>
+  </div>
+</div>
+
+
     <div id="active-users">Active Users: 0</div>
 
     <div class="chat-container">
@@ -58,5 +71,27 @@
     <script type="module" src="https://cdn.jsdelivr.net/npm/emoji-picker-element@^1/index.js"></script>
     <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
     <script src="script.js"></script>
+    <script>
+  let progress = 0;
+  const preloader = document.getElementById('preloader');
+  const progressText = document.getElementById('progress-text');
+  const progressFill = document.querySelector('.progress-fill');
+
+  const interval = setInterval(() => {
+    if (progress >= 100) {
+      clearInterval(interval);
+      preloader.style.opacity = '0';
+      setTimeout(() => {
+        preloader.style.display = 'none';
+      }, 800);
+    } else {
+      progress += 1;
+      progressText.innerText = `Loading... ${progress}%`;
+      progressFill.style.width = `${progress}%`;
+    }
+  }, 25); // ~2.5s duration
+</script>
+
+
   </body>
 </html>
